@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -8,10 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useCreateProgram, usePrograms } from '@/lib/hooks/usePrograms'
-import { createClient } from '@/lib/supabase/client'
-import { AlertCircle } from 'lucide-react'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { useUpdateProgram } from '@/lib/hooks/usePrograms'
 
 const programSchema = z.object({
   program_name: z.enum(['holud', 'mehendi', 'reception', 'engagement', 'corporate', 'birthday', 'custom']),
@@ -25,78 +22,73 @@ const programSchema = z.object({
 
 type ProgramFormValues = z.infer<typeof programSchema>
 
-export function NewProgramSheet({ 
-  clientId, 
+export function EditProgramSheet({ 
+  program, 
   isOpen, 
   onClose 
 }: { 
-  clientId: string, 
+  program: any, 
   isOpen: boolean, 
   onClose: () => void 
 }) {
-  const { mutateAsync: createProgram, isPending } = useCreateProgram()
-  const { data: allPrograms } = usePrograms() // fetch all to check conflicts
-  const [conflictWarning, setConflictWarning] = useState<string | null>(null)
+  const { mutateAsync: updateProgram, isPending } = useUpdateProgram()
   
   const form = useForm<ProgramFormValues>({
     resolver: zodResolver(programSchema),
     defaultValues: {
-      program_name: 'reception',
-      custom_name: '',
-      event_date: '',
-      venue_name: '',
-      theme_notes: '',
-      color: '#E3B505'
+      program_name: program?.program_name || 'reception',
+      custom_name: program?.custom_name || '',
+      event_date: program?.event_date ? new Date(program.event_date).toISOString().split('T')[0] : '',
+      venue_name: program?.venue_name || '',
+      theme_notes: program?.theme_notes || '',
+      guest_count: program?.guest_count ? String(program.guest_count) : '',
+      color: program?.color || '#E3B505'
     }
   })
 
-  const selectedDate = form.watch('event_date')
+  useEffect(() => {
+    if (program) {
+      form.reset({
+        program_name: program.program_name || 'reception',
+        custom_name: program.custom_name || '',
+        event_date: program.event_date ? new Date(program.event_date).toISOString().split('T')[0] : '',
+        venue_name: program.venue_name || '',
+        theme_notes: program.theme_notes || '',
+        guest_count: program.guest_count ? String(program.guest_count) : '',
+        color: program.color || '#E3B505'
+      })
+    }
+  }, [program, form])
+
   const selectedType = form.watch('program_name')
 
-  useEffect(() => {
-    if (selectedDate && allPrograms) {
-      const conflicts = allPrograms.filter((p: any) => p.event_date === selectedDate)
-      if (conflicts.length > 0) {
-        setConflictWarning(`Warning: There are ${conflicts.length} other program(s) scheduled on this date!`)
-      } else {
-        setConflictWarning(null)
-      }
-    } else {
-      setConflictWarning(null)
-    }
-  }, [selectedDate, allPrograms])
-
   const onSubmit = async (data: ProgramFormValues) => {
-    const supabase = createClient()
-    const { data: userData } = await supabase.auth.getUser()
-    
-    if (!userData.user) return
+    try {
+      await updateProgram({
+        id: program.id,
+        program_name: data.program_name as any,
+        custom_name: data.program_name === 'custom' ? data.custom_name : null,
+        event_date: data.event_date,
+        venue_name: data.venue_name || null,
+        guest_count: data.guest_count ? parseInt(data.guest_count) : null,
+        theme_notes: data.theme_notes || null,
+        color: data.color || '#E3B505'
+      })
 
-    await createProgram({
-      client_id: clientId,
-      program_name: data.program_name,
-      custom_name: data.program_name === 'custom' ? data.custom_name : null,
-      event_date: data.event_date,
-      venue_name: data.venue_name || null,
-      guest_count: data.guest_count ? parseInt(data.guest_count) : null,
-      theme_notes: data.theme_notes || null,
-      color: data.color || '#E3B505',
-      status: 'planning',
-      created_by: userData.user.id,
-      responsible_partner: userData.user.id
-    })
-
-    form.reset()
-    onClose()
+      onClose()
+    } catch (error) {
+      console.error('Failed to update program:', error)
+      alert('Failed to update program')
+    }
   }
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent className="overflow-y-auto sm:max-w-md">
         <SheetHeader>
-          <SheetTitle>Add New Program</SheetTitle>
+          <SheetTitle>Edit Program Details</SheetTitle>
           <SheetDescription>
-            Schedule a new event program for this client.
+            Update the details for this event program.
           </SheetDescription>
         </SheetHeader>
 
@@ -134,14 +126,6 @@ export function NewProgramSheet({
             <Input id="event_date" type="date" {...form.register('event_date')} />
             {form.formState.errors.event_date && (
               <p className="text-sm text-red-500">{form.formState.errors.event_date.message}</p>
-            )}
-            
-            {conflictWarning && (
-              <Alert variant="destructive" className="mt-2 bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-900/20 dark:border-amber-900 dark:text-amber-300">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Schedule Conflict</AlertTitle>
-                <AlertDescription>{conflictWarning}</AlertDescription>
-              </Alert>
             )}
           </div>
 
@@ -196,7 +180,7 @@ export function NewProgramSheet({
           </div>
 
           <Button type="submit" className="w-full" disabled={isPending}>
-            {isPending ? 'Saving...' : 'Create Program'}
+            {isPending ? 'Saving...' : 'Save Changes'}
           </Button>
         </form>
       </SheetContent>

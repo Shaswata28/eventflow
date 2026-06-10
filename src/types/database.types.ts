@@ -15,7 +15,8 @@ export interface Database {
             program_name_type: 'holud' | 'mehendi' | 'reception' | 'engagement' | 'corporate' | 'birthday' | 'custom'
             program_status: 'planning' | 'vendors_sourcing' | 'vendors_confirmed' | 'ready' | 'live' | 'completed' | 'cancelled'
             quotation_status: 'draft' | 'internal_review' | 'sent_to_client' | 'approved' | 'rejected'
-            assignment_status: 'pending_approval' | 'approved' | 'confirmed' | 'paid' | 'completed' | 'rejected'
+            assignment_status: 'pending_approval' | 'approved' | 'confirmed' | 'paid' | 'completed' | 'rejected' | 'fully_paid'
+            payment_type: 'advance' | 'installment' | 'final' | 'refund'
             approval_level: 'finance' | 'md'
             approval_status: 'pending' | 'approved' | 'rejected'
             document_label: 'bill' | 'receipt' | 'contract' | 'quotation' | 'agreement' | 'reference' | 'other'
@@ -150,6 +151,7 @@ export interface Database {
                     theme_notes: string | null
                     responsible_partner: string | null
                     status: Database['public']['Enums']['program_status']
+                    color: string | null
                     created_by: string
                     created_at: string
                     updated_at: string
@@ -166,6 +168,7 @@ export interface Database {
                     theme_notes?: string | null
                     responsible_partner?: string | null
                     status?: Database['public']['Enums']['program_status']
+                    color?: string | null
                     created_by: string
                     created_at?: string
                     updated_at?: string
@@ -182,6 +185,7 @@ export interface Database {
                     theme_notes?: string | null
                     responsible_partner?: string | null
                     status?: Database['public']['Enums']['program_status']
+                    color?: string | null
                     created_by?: string
                     created_at?: string
                     updated_at?: string
@@ -411,6 +415,39 @@ export interface Database {
                     note?: string | null
                     requested_at?: string
                     resolved_at?: string | null
+                }
+            }
+            vendor_payments: {
+                Row: {
+                    id: string
+                    vendor_assignment_id: string
+                    amount: number
+                    payment_type: Database['public']['Enums']['payment_type']
+                    paid_by: string
+                    paid_at: string
+                    note: string | null
+                    bill_url: string | null
+                    created_at: string
+                }
+                Insert: {
+                    id?: string
+                    vendor_assignment_id: string
+                    amount: number
+                    payment_type?: Database['public']['Enums']['payment_type']
+                    paid_by: string
+                    paid_at?: string
+                    note?: string | null
+                    bill_url?: string | null
+                }
+                Update: {
+                    id?: string
+                    vendor_assignment_id?: string
+                    amount?: number
+                    payment_type?: Database['public']['Enums']['payment_type']
+                    paid_by?: string
+                    paid_at?: string
+                    note?: string | null
+                    bill_url?: string | null
                 }
             }
             documents: {

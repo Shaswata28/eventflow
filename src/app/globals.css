@@ -51,47 +51,76 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #020617;
-  --card: #f8fafc;
-  --card-foreground: #020617;
+  --foreground: #0f172a;
+
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+
   --popover: #ffffff;
-  --popover-foreground: #020617;
+  --popover-foreground: #0f172a;
+
   --primary: #6366f1;
   --primary-foreground: #ffffff;
+
   --secondary: #f1f5f9;
   --secondary-foreground: #0f172a;
+
   --muted: #f8fafc;
   --muted-foreground: #64748b;
+
+  /* accent stays emerald — used only for success/confirmed states */
   --accent: #10b981;
   --accent-foreground: #ffffff;
+
   --destructive: #ef4444;
+
   --border: #e2e8f0;
-  --input: #e2e8f0;
+  --input: #f8fafc;
   --ring: #6366f1;
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.5rem;
+
+  --radius: 0.625rem;
+  /* 10px — slightly more rounded than your current 8px */
+
+  /* Sidebar — keep your dark sidebar, it's correct */
   --sidebar: #0f172a;
-  --sidebar-foreground: #94a3b8;
+  --sidebar-foreground: #64748b;
   --sidebar-primary: #6366f1;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #1e293b;
-  --sidebar-accent-foreground: #ffffff;
+  --sidebar-accent-foreground: #f8fafc;
   --sidebar-border: #1e293b;
   --sidebar-ring: #6366f1;
+
+  /* Status semantic tokens — use these, not raw colors */
+  --status-planning: #f59e0b;
+  --status-sourcing: #3b82f6;
+  --status-confirmed: #10b981;
+  --status-live: #6366f1;
+  --status-rejected: #ef4444;
+  --status-completed: #94a3b8;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }
+}
+
+@keyframes drift {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(var(--x-move), var(--y-move)) scale(1.1); }
+  66% { transform: translate(calc(var(--x-move) * -1), calc(var(--y-move) * 0.5)) scale(0.9); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+.animate-drift {
+  animation: drift infinite alternate ease-in-out;
 }

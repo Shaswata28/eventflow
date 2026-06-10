@@ -23,15 +23,11 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div>
-            <h3 className="text-2xl font-semibold leading-6 text-gray-900 dark:text-white">
+            <h3 className="text-2xl font-bold leading-6 text-gray-900 dark:text-white">
               Vendor Profile
             </h3>
           </div>
         </div>
-        <Button variant="outline" className="hidden sm:flex">
-          <Edit className="h-4 w-4 mr-2" />
-          Edit Vendor
-        </Button>
       </div>
       
       <VendorDetail id={id} />

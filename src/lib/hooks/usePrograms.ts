@@ -42,7 +42,8 @@ export function useProgram(programId: string) {
         .from('event_programs')
         .select(`
           *,
-          client:clients(*)
+          client:clients(*),
+          partner:user_profiles!event_programs_responsible_partner_fkey(name)
         `)
         .eq('id', programId)
         .single()
@@ -103,7 +104,7 @@ export function useUpdateProgram() {
     mutationFn: async ({ id, ...update }: ProgramUpdate & { id: string }) => {
       const { data, error } = await (supabase as any)
         .from('event_programs')
-        .update(update as any)
+        .update(update)
         .eq('id', id)
         .select()
         .single()

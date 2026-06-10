@@ -148,7 +148,7 @@ export function useResolveApproval() {
       const { assignmentStatus, escalateTo } = determineNextStatus(currentLevel, decision, quotedPrice)
 
       // 1. Update current approval request
-      const { error: approvalError } = await (supabase.from('approval_requests') as any)
+      const { error: approvalError } = await (supabase as any).from('approval_requests')
         .update({
           status: decision,
           note,
@@ -160,7 +160,7 @@ export function useResolveApproval() {
       if (approvalError) throw approvalError
 
       // 2. Update vendor assignment status
-      const { error: assignmentError } = await (supabase.from('vendor_assignments') as any)
+      const { error: assignmentError } = await (supabase as any).from('vendor_assignments')
         .update({ status: assignmentStatus })
         .eq('id', assignmentId)
 
@@ -190,12 +190,12 @@ export function useResolveApproval() {
           const { data: mdUsers } = await supabase.from('user_profiles').select('id').eq('role', 'managing_director').limit(1)
           const mdId = (mdUsers as any)?.[0]?.id || user.id
           
-          await (supabase.from('approval_requests') as any).insert({
+          await (supabase as any).from('approval_requests').insert({
             vendor_assignment_id: assignmentId,
             approval_level: escalateTo,
             approver_id: mdId,
             status: 'pending'
-          } as any)
+          })
       }
 
       return { success: true }

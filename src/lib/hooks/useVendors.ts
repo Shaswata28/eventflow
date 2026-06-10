@@ -65,3 +65,28 @@ export function useCreateVendor() {
     },
   })
 }
+
+type VendorUpdate = Database['public']['Tables']['vendors']['Update']
+
+export function useUpdateVendor() {
+  const queryClient = useQueryClient()
+  const supabase = createClient()
+
+  return useMutation({
+    mutationFn: async ({ id, updates }: { id: string, updates: VendorUpdate }) => {
+      const { data, error } = await (supabase as any)
+        .from('vendors')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single()
+
+      if (error) throw error
+      return data as VendorRow
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['vendors'] })
+      queryClient.invalidateQueries({ queryKey: ['vendor', data.id] })
+    },
+  })
+}

@@ -28,7 +28,7 @@ function SheetOverlay({ className, ...props }: SheetPrimitive.Backdrop.Props) {
     <SheetPrimitive.Backdrop
       data-slot="sheet-overlay"
       className={cn(
-        "fixed inset-0 z-50 bg-black/10 transition-opacity duration-150 data-ending-style:opacity-0 data-starting-style:opacity-0 supports-backdrop-filter:backdrop-blur-xs",
+        "fixed inset-0 z-50 bg-slate-900/20 backdrop-blur-sm transition-opacity duration-300 data-ending-style:opacity-0 data-starting-style:opacity-0",
         className
       )}
       {...props}
@@ -53,25 +53,34 @@ function SheetContent({
         data-slot="sheet-content"
         data-side={side}
         className={cn(
-          "fixed z-50 flex flex-col gap-4 bg-popover bg-clip-padding text-sm text-popover-foreground shadow-lg transition duration-200 ease-in-out data-ending-style:opacity-0 data-starting-style:opacity-0 data-[side=bottom]:inset-x-0 data-[side=bottom]:bottom-0 data-[side=bottom]:h-auto data-[side=bottom]:border-t data-[side=bottom]:data-ending-style:translate-y-[2.5rem] data-[side=bottom]:data-starting-style:translate-y-[2.5rem] data-[side=left]:inset-y-0 data-[side=left]:left-0 data-[side=left]:h-full data-[side=left]:w-3/4 data-[side=left]:border-r data-[side=left]:data-ending-style:translate-x-[-2.5rem] data-[side=left]:data-starting-style:translate-x-[-2.5rem] data-[side=right]:inset-y-0 data-[side=right]:right-0 data-[side=right]:h-full data-[side=right]:w-3/4 data-[side=right]:border-l data-[side=right]:data-ending-style:translate-x-[2.5rem] data-[side=right]:data-starting-style:translate-x-[2.5rem] data-[side=top]:inset-x-0 data-[side=top]:top-0 data-[side=top]:h-auto data-[side=top]:border-b data-[side=top]:data-ending-style:translate-y-[-2.5rem] data-[side=top]:data-starting-style:translate-y-[-2.5rem] data-[side=left]:sm:max-w-sm data-[side=right]:sm:max-w-sm",
+          "fixed z-50 flex flex-col text-sm shadow-2xl transition-all duration-300 ease-out data-ending-style:opacity-0 data-starting-style:opacity-0",
+          // Cleaner Glassmorphism Background (less translucent to prevent grey bleed-through)
+          "bg-white/95 dark:bg-gray-900/95 supports-[backdrop-filter]:backdrop-blur-2xl supports-[backdrop-filter]:bg-white/85 dark:supports-[backdrop-filter]:bg-gray-900/85",
+          // Floating Right Sidebar Design
+          "data-[side=right]:top-4 data-[side=right]:bottom-4 data-[side=right]:right-4 data-[side=right]:h-[calc(100vh-2rem)] data-[side=right]:w-[calc(100vw-2rem)] data-[side=right]:sm:max-w-md data-[side=right]:rounded-[24px] data-[side=right]:border data-[side=right]:border-white/60 dark:data-[side=right]:border-white/10",
+          // Smooth Entrance Animation
+          "data-[side=right]:data-ending-style:translate-x-[120%] data-[side=right]:data-starting-style:translate-x-[120%] data-[side=right]:data-ending-style:scale-95 data-[side=right]:data-starting-style:scale-95",
+          // Fallback Left
+          "data-[side=left]:inset-y-0 data-[side=left]:left-0 data-[side=left]:h-full data-[side=left]:w-3/4 data-[side=left]:border-r data-[side=left]:data-ending-style:translate-x-[-100%] data-[side=left]:data-starting-style:translate-x-[-100%] data-[side=left]:sm:max-w-sm",
           className
         )}
         {...props}
       >
-        {children}
+        <div className="flex-1 overflow-y-auto px-6 py-2 pb-6 custom-scrollbar">
+          {children}
+        </div>
         {showCloseButton && (
           <SheetPrimitive.Close
             data-slot="sheet-close"
             render={
               <Button
                 variant="ghost"
-                className="absolute top-3 right-3"
+                className="absolute top-5 right-5 h-8 w-8 rounded-full bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 transition-colors"
                 size="icon-sm"
               />
             }
           >
-            <XIcon
-            />
+            <XIcon className="h-4 w-4" />
             <span className="sr-only">Close</span>
           </SheetPrimitive.Close>
         )}
@@ -84,7 +93,7 @@ function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="sheet-header"
-      className={cn("flex flex-col gap-0.5 p-4", className)}
+      className={cn("flex flex-col gap-1.5 pb-4 mb-4 pt-6 border-b border-gray-200/60 dark:border-gray-800/60", className)}
       {...props}
     />
   )
@@ -105,7 +114,7 @@ function SheetTitle({ className, ...props }: SheetPrimitive.Title.Props) {
     <SheetPrimitive.Title
       data-slot="sheet-title"
       className={cn(
-        "font-heading text-base font-medium text-foreground",
+        "font-heading text-xl font-bold tracking-tight bg-gradient-to-br from-indigo-600 to-indigo-400 dark:from-indigo-400 dark:to-indigo-200 bg-clip-text text-transparent",
         className
       )}
       {...props}

@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Database } from '@/types/database.types'
 
 type ClientInsert = Database['public']['Tables']['clients']['Insert']
+type ClientUpdate = Database['public']['Tables']['clients']['Update']
 
 export function useClients() {
   const supabase = createClient()
@@ -60,6 +61,31 @@ export function useCreateClient() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clients'] })
+    },
+  })
+}
+
+export function useUpdateClient() {
+  const queryClient = useQueryClient()
+  const supabase = createClient()
+
+  return useMutation({
+    mutationFn: async ({ id, ...update }: ClientUpdate & { id: string }) => {
+      const { data, error } = await (supabase as any)
+        .from('clients')
+        .update(update)
+        .eq('id', id)
+        .select()
+        .single()
+
+      if (error) throw error
+      return data as Database['public']['Tables']['clients']['Row']
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['clients'] })
+      if (data?.id) {
+        queryClient.invalidateQueries({ queryKey: ['client', data.id] })
+      }
     },
   })
 }

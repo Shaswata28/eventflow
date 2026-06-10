@@ -78,9 +78,9 @@ export function useUpdateTask() {
         updates.done_at = null
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('event_checklists')
-        .update(updates as any)
+        .update(updates)
         .eq('id', id)
         .select()
         .single()
@@ -107,6 +107,7 @@ export function useUpdateTask() {
     },
     onSettled: (data, error, variables) => {
       queryClient.invalidateQueries({ queryKey: ['checklists', variables.programId] })
+      queryClient.invalidateQueries({ queryKey: ['checklists', 'pending-all'] })
     }
   })
 }
@@ -159,4 +160,52 @@ export function useChecklistSubscription(programId: string) {
       supabase.removeChannel(channel)
     }
   }, [programId, queryClient, supabase])
+}
+
+// Fetch all pending tasks across all active programs for the dashboard
+export function useAllPendingTasks() {
+  const supabase = createClient()
+
+  return useQuery({
+    queryKey: ['checklists', 'pending-all'],
+    queryFn: async () => {
+      // First, get all active programs
+      const { data: activePrograms, error: programsError } = await supabase
+        .from('event_programs')
+        .select('id, program_name, custom_name, color, event_date, client:clients(full_name)')
+        .in('status', ['planning', 'vendors_sourcing', 'vendors_confirmed', 'ready', 'live'])
+        
+      if (programsError) throw programsError
+
+      if (!activePrograms || activePrograms.length === 0) {
+        return []
+      }
+
+      const programIds = (activePrograms as any[]).map(p => p.id)
+
+      // Fetch pending tasks for these programs
+      const { data, error } = await supabase
+        .from('event_checklists')
+        .select(`
+          *,
+          assigned_user:user_profiles!event_checklists_assigned_to_fkey(name, avatar_url),
+          done_user:user_profiles!event_checklists_done_by_fkey(name)
+        `)
+        .in('program_id', programIds)
+        .eq('is_done', false)
+        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: true })
+
+      if (error) throw error
+      
+      // Map program details onto tasks
+      return (data as any[]).map(task => {
+        const program = (activePrograms as any[]).find(p => p.id === task.program_id)
+        return {
+          ...task,
+          program
+        }
+      })
+    }
+  })
 }

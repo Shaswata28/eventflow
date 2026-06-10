@@ -57,7 +57,7 @@ export function useUpdateNote() {
     mutationFn: async ({ id, ...update }: NoteUpdate & { id: string }) => {
       const { data, error } = await (supabase as any)
         .from('consultation_notes')
-        .update(update as any)
+        .update(update)
         .eq('id', id)
         .select()
         .single()

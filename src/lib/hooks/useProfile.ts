@@ -38,9 +38,9 @@ export function useUpdateProfile() {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) throw new Error('Not authenticated')
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('user_profiles')
-        .update(updates as any)
+        .update(updates)
         .eq('id', session.user.id)
         .select()
         .single()

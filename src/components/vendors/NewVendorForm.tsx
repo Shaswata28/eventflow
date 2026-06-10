@@ -38,7 +38,6 @@ export function NewVendorForm() {
   const { mutateAsync: createVendor, isPending } = useCreateVendor()
   const [error, setError] = useState<string | null>(null)
 
-  // Using simple state since react-hook-form with Shadcn might need more boilerplate
   const [formData, setFormData] = useState<Partial<FormData>>({
     name: '',
     category: '',
@@ -66,7 +65,6 @@ export function NewVendorForm() {
         ...formData,
         last_used_price: lastUsedPrice ? Number(lastUsedPrice) : null,
         rating: rating ? Number(rating) : null,
-        // added_by could be added here if we had auth state, for MVP we can skip if it's optional
       }
       
       const validated = formSchema.parse(payload)
@@ -84,16 +82,16 @@ export function NewVendorForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+    <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-900 border border-gray-200/50 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500">
       {error && (
-        <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm">
+        <div className="bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 p-4 rounded-xl text-sm font-medium mb-6 border border-red-100 dark:border-red-500/20">
           {error}
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label htmlFor="name">Vendor Name *</Label>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="name" className="text-gray-700 dark:text-gray-300 font-semibold">Vendor Name *</Label>
           <Input 
             id="name" 
             name="name" 
@@ -101,22 +99,23 @@ export function NewVendorForm() {
             value={formData.name} 
             onChange={handleChange} 
             placeholder="E.g., Star Decorators" 
+            className="h-11 rounded-xl bg-gray-50/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus-visible:ring-indigo-500"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="category">Category *</Label>
+          <Label htmlFor="category" className="text-gray-700 dark:text-gray-300 font-semibold">Category *</Label>
           <Select 
             value={formData.category} 
             onValueChange={(value) => setFormData(prev => ({ ...prev, category: value as string }))}
           >
-            <SelectTrigger>
+            <SelectTrigger className="h-11 rounded-xl bg-gray-50/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus:ring-indigo-500">
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-xl">
               {CATEGORIES.map(cat => (
-                <SelectItem key={cat} value={cat}>
-                  {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                <SelectItem key={cat} value={cat} className="capitalize rounded-lg">
+                  {cat.replace('_', ' ')}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -124,92 +123,108 @@ export function NewVendorForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="phone_primary">Primary Phone *</Label>
+          <Label htmlFor="phone_primary" className="text-gray-700 dark:text-gray-300 font-semibold">Primary Phone *</Label>
           <Input 
             id="phone_primary" 
             name="phone_primary" 
             required 
             value={formData.phone_primary} 
             onChange={handleChange} 
+            placeholder="+880 1..."
+            className="h-11 rounded-xl bg-gray-50/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus-visible:ring-indigo-500"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="phone_secondary">Secondary Phone</Label>
+          <Label htmlFor="phone_secondary" className="text-gray-700 dark:text-gray-300 font-semibold">Secondary Phone</Label>
           <Input 
             id="phone_secondary" 
             name="phone_secondary" 
             value={formData.phone_secondary} 
             onChange={handleChange} 
+            className="h-11 rounded-xl bg-gray-50/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus-visible:ring-indigo-500"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="area">Area / Zone</Label>
+          <Label htmlFor="area" className="text-gray-700 dark:text-gray-300 font-semibold">Area / Zone</Label>
           <Input 
             id="area" 
             name="area" 
             value={formData.area} 
             onChange={handleChange} 
             placeholder="E.g., Gulshan" 
+            className="h-11 rounded-xl bg-gray-50/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus-visible:ring-indigo-500"
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="location">Full Address</Label>
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="location" className="text-gray-700 dark:text-gray-300 font-semibold">Full Address</Label>
           <Input 
             id="location" 
             name="location" 
             value={formData.location} 
             onChange={handleChange} 
+            className="h-11 rounded-xl bg-gray-50/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus-visible:ring-indigo-500"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="last_used_price">Last Used Price (BDT)</Label>
+          <Label htmlFor="last_used_price" className="text-gray-700 dark:text-gray-300 font-semibold">Last Used Price (BDT)</Label>
           <Input 
             id="last_used_price" 
             type="number"
             value={lastUsedPrice} 
             onChange={(e) => setLastUsedPrice(e.target.value)} 
+            placeholder="0"
+            className="h-11 rounded-xl bg-gray-50/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus-visible:ring-indigo-500"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="rating">Rating (1-5)</Label>
+          <Label htmlFor="rating" className="text-gray-700 dark:text-gray-300 font-semibold">Rating (1-5)</Label>
           <Input 
             id="rating" 
             type="number" 
             min="1" 
             max="5"
+            step="0.1"
             value={rating} 
             onChange={(e) => setRating(e.target.value)} 
+            placeholder="5.0"
+            className="h-11 rounded-xl bg-gray-50/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus-visible:ring-indigo-500"
+          />
+        </div>
+
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="notes" className="text-gray-700 dark:text-gray-300 font-semibold">Notes</Label>
+          <Textarea 
+            id="notes" 
+            name="notes" 
+            value={formData.notes} 
+            onChange={handleChange} 
+            placeholder="Any special terms, connection details, etc."
+            rows={3}
+            className="rounded-xl bg-gray-50/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus-visible:ring-indigo-500 resize-none"
           />
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="notes">Notes</Label>
-        <Textarea 
-          id="notes" 
-          name="notes" 
-          value={formData.notes} 
-          onChange={handleChange} 
-          placeholder="Any special terms, connection details, etc."
-          rows={4}
-        />
-      </div>
-
-      <div className="flex justify-end space-x-4 pt-4 border-t">
+      <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-100 dark:border-gray-800">
         <Button 
           type="button" 
-          variant="outline" 
+          variant="ghost" 
           onClick={() => router.back()}
           disabled={isPending}
+          className="rounded-xl font-semibold hover:bg-gray-100 dark:hover:bg-gray-800"
         >
           Cancel
         </Button>
-        <Button type="submit" disabled={isPending}>
+        <Button 
+          type="submit" 
+          disabled={isPending}
+          className="rounded-xl font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-all hover:scale-105"
+        >
           {isPending ? 'Saving...' : 'Add Vendor'}
         </Button>
       </div>
