@@ -1,10 +1,13 @@
 import { format } from 'date-fns'
 
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
+  // Format as US style numbers (1,000.00) but prepend the Taka symbol
+  const formatted = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
   }).format(amount)
+  
+  return `৳${formatted}`
 }
 
 export function formatDate(dateString: string | Date | null | undefined): string {

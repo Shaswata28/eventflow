@@ -205,12 +205,12 @@ export default function ClientDetailPage() {
 
             {/* Budget Card */}
             <div className="col-span-1 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-4 sm:p-5 shadow-md flex flex-col justify-center relative overflow-hidden group text-white transition-all hover:shadow-lg hover:-translate-y-1">
-              <div className="absolute -right-6 -top-6 text-white/10 transform group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500">
-                <DollarSign className="w-48 h-48" />
+              <div className="absolute -right-6 -top-12 text-white/10 transform group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500">
+                <span className="text-[200px] font-bold leading-none">৳</span>
               </div>
               <div className="relative z-10">
                 <h3 className="text-sm font-semibold uppercase tracking-wider text-indigo-100 mb-8 flex items-center gap-2">
-                  <div className="p-1.5 bg-white/20 rounded-md backdrop-blur-sm"><DollarSign className="w-4 h-4 text-white" /></div>
+                  <div className="p-1.5 bg-white/20 rounded-md backdrop-blur-sm"><span className="font-bold text-base leading-none text-white px-1">৳</span></div>
                   Estimated Budget
                 </h3>
                 <p className="text-3xl font-extrabold tracking-tight">

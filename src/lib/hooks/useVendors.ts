@@ -90,3 +90,24 @@ export function useUpdateVendor() {
     },
   })
 }
+
+export function useDeleteVendor() {
+  const queryClient = useQueryClient()
+  const supabase = createClient()
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('vendors')
+        .delete()
+        .eq('id', id)
+
+      if (error) throw error
+      return id
+    },
+    onSuccess: (id) => {
+      queryClient.invalidateQueries({ queryKey: ['vendors'] })
+      queryClient.removeQueries({ queryKey: ['vendor', id] })
+    },
+  })
+}

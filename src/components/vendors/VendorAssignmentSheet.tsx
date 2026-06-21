@@ -143,7 +143,7 @@ export function VendorAssignmentSheet({ open, onOpenChange, serviceCategoryId, c
               <div className="space-y-2">
                 <Label htmlFor="quoted_price">Quoted Price (BDT) *</Label>
                 <div className="relative">
-                  <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                  <span className="absolute left-3 top-2.5 text-gray-500 font-bold leading-none">৳</span>
                   <Input
                     id="quoted_price"
                     type="number"

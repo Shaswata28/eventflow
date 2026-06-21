@@ -301,7 +301,7 @@ export function BudgetAndVendorsTab({ programId }: { programId: string }) {
           {categories?.length === 0 && !isAddingCategory ? (
             <div className="text-center py-16 border border-dashed border-gray-300 dark:border-gray-700 rounded-3xl bg-gray-50/50 dark:bg-gray-800/20 animate-in fade-in duration-500 delay-300 fill-mode-both">
               <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                <DollarSign className="h-8 w-8 text-gray-400" />
+                <span className="text-3xl font-bold text-gray-400 leading-none">৳</span>
               </div>
               <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No budgets allocated yet</h4>
               <p className="text-sm text-gray-500 mb-6">Start by allocating budget for different service categories.</p>

@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { Store, Star, Trash2 } from 'lucide-react'
 import {
   Sheet,
   SheetContent,
@@ -14,7 +16,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useUpdateVendor } from '@/lib/hooks/useVendors'
+import { useUpdateVendor, useDeleteVendor } from '@/lib/hooks/useVendors'
 import { Database } from '@/types/database.types'
 import { toast } from 'sonner'
 import * as z from 'zod'
@@ -47,6 +49,8 @@ interface EditVendorSheetProps {
 
 export function EditVendorSheet({ vendor, open, onOpenChange }: EditVendorSheetProps) {
   const { mutateAsync: updateVendor, isPending } = useUpdateVendor()
+  const { mutateAsync: deleteVendor, isPending: isDeleting } = useDeleteVendor()
+  const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   
   const [formData, setFormData] = useState<Partial<VendorRow>>({})
@@ -102,22 +106,42 @@ export function EditVendorSheet({ vendor, open, onOpenChange }: EditVendorSheetP
     }
   }
 
+  const handleDelete = async () => {
+    if (window.confirm("Are you sure you want to delete this vendor? This action cannot be undone.")) {
+      try {
+        await deleteVendor(vendor.id)
+        toast.success("Vendor deleted successfully")
+        onOpenChange(false)
+        router.push("/dashboard/vendors")
+      } catch (err: any) {
+        setError(err.message || "Failed to delete vendor")
+      }
+    }
+  }
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="overflow-y-auto w-full sm:max-w-md md:max-w-xl border-l-0 sm:border-l sm:rounded-l-3xl shadow-2xl p-0">
-        <form onSubmit={handleSubmit} className="h-full flex flex-col">
-          <SheetHeader className="p-6 pb-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900 sticky top-0 z-10 backdrop-blur-xl">
-            <SheetTitle className="text-xl">Edit Vendor</SheetTitle>
-            <SheetDescription>Update details for {vendor?.name}</SheetDescription>
-            {error && (
-              <div className="bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 p-3 rounded-lg text-sm font-medium mt-4 border border-red-100 dark:border-red-500/20">
-                {error}
-              </div>
-            )}
-          </SheetHeader>
+      <SheetContent className="overflow-y-auto w-full sm:max-w-md md:max-w-xl custom-scrollbar">
+        <SheetHeader>
+          <SheetTitle className="flex items-center gap-2">
+            <div className="p-2 bg-indigo-50 dark:bg-indigo-500/10 rounded-lg">
+              <Store className="w-5 h-5 text-indigo-500" />
+            </div>
+            Edit Vendor
+          </SheetTitle>
+          <SheetDescription>Update details and contact information for {vendor?.name}</SheetDescription>
+          {error && (
+            <div className="bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 p-3 rounded-lg text-sm font-medium mt-4 border border-red-100 dark:border-red-500/20">
+              {error}
+            </div>
+          )}
+        </SheetHeader>
 
-          <div className="flex-1 p-6 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+        <form onSubmit={handleSubmit} className="mt-6 space-y-8 pb-8">
+          {/* Basic Information */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Basic Details</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="name">Vendor Name</Label>
                 <Input 
@@ -126,7 +150,7 @@ export function EditVendorSheet({ vendor, open, onOpenChange }: EditVendorSheetP
                   required 
                   value={formData.name || ''} 
                   onChange={handleChange} 
-                  className="rounded-xl"
+                  className="rounded-xl bg-white dark:bg-gray-900"
                 />
               </div>
 
@@ -136,7 +160,7 @@ export function EditVendorSheet({ vendor, open, onOpenChange }: EditVendorSheetP
                   value={formData.category} 
                   onValueChange={(value) => setFormData(prev => ({ ...prev, category: value as any }))}
                 >
-                  <SelectTrigger className="rounded-xl">
+                  <SelectTrigger className="w-full rounded-xl bg-white dark:bg-gray-900">
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
@@ -155,7 +179,7 @@ export function EditVendorSheet({ vendor, open, onOpenChange }: EditVendorSheetP
                   value={formData.is_active ? 'active' : 'inactive'} 
                   onValueChange={(value) => setFormData(prev => ({ ...prev, is_active: value === 'active' }))}
                 >
-                  <SelectTrigger className="rounded-xl">
+                  <SelectTrigger className="w-full rounded-xl bg-white dark:bg-gray-900">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -164,7 +188,13 @@ export function EditVendorSheet({ vendor, open, onOpenChange }: EditVendorSheetP
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+          </div>
 
+          {/* Contact Information */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Contact & Location</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50/50 dark:bg-gray-800/30 p-4 sm:p-5 rounded-2xl border border-gray-100 dark:border-gray-800">
               <div className="space-y-2">
                 <Label htmlFor="phone_primary">Primary Phone</Label>
                 <Input 
@@ -173,7 +203,7 @@ export function EditVendorSheet({ vendor, open, onOpenChange }: EditVendorSheetP
                   required 
                   value={formData.phone_primary || ''} 
                   onChange={handleChange} 
-                  className="rounded-xl"
+                  className="rounded-xl bg-white dark:bg-gray-900"
                 />
               </div>
 
@@ -184,7 +214,7 @@ export function EditVendorSheet({ vendor, open, onOpenChange }: EditVendorSheetP
                   name="phone_secondary" 
                   value={formData.phone_secondary || ''} 
                   onChange={handleChange} 
-                  className="rounded-xl"
+                  className="rounded-xl bg-white dark:bg-gray-900"
                 />
               </div>
 
@@ -195,7 +225,7 @@ export function EditVendorSheet({ vendor, open, onOpenChange }: EditVendorSheetP
                   name="area" 
                   value={formData.area || ''} 
                   onChange={handleChange} 
-                  className="rounded-xl"
+                  className="rounded-xl bg-white dark:bg-gray-900"
                 />
               </div>
 
@@ -206,31 +236,43 @@ export function EditVendorSheet({ vendor, open, onOpenChange }: EditVendorSheetP
                   name="location" 
                   value={formData.location || ''} 
                   onChange={handleChange} 
-                  className="rounded-xl"
+                  className="rounded-xl bg-white dark:bg-gray-900"
                 />
               </div>
+            </div>
+          </div>
 
+          {/* Financial & Additional Details */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Additional Details</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="last_used_price">Last Price (BDT)</Label>
-                <Input 
-                  id="last_used_price" 
-                  type="number"
-                  value={lastUsedPrice} 
-                  onChange={(e) => setLastUsedPrice(e.target.value)} 
-                  className="rounded-xl"
-                />
+                <div className="relative">
+                  <span className="absolute left-3 top-2.5 text-gray-500 font-bold leading-none">৳</span>
+                  <Input 
+                    id="last_used_price" 
+                    type="number"
+                    value={lastUsedPrice} 
+                    onChange={(e) => setLastUsedPrice(e.target.value)} 
+                    className="rounded-xl bg-white dark:bg-gray-900 pl-8"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="rating">Rating (1-5)</Label>
-                <Input 
-                  id="rating" 
-                  type="number" 
-                  min="1" max="5" step="0.1"
-                  value={rating} 
-                  onChange={(e) => setRating(e.target.value)} 
-                  className="rounded-xl"
-                />
+                <div className="relative">
+                  <Star className="absolute left-3 top-2.5 w-4 h-4 text-amber-500" />
+                  <Input 
+                    id="rating" 
+                    type="number" 
+                    min="1" max="5" step="0.1"
+                    value={rating} 
+                    onChange={(e) => setRating(e.target.value)} 
+                    className="rounded-xl bg-white dark:bg-gray-900 pl-9"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2 md:col-span-2">
@@ -241,30 +283,44 @@ export function EditVendorSheet({ vendor, open, onOpenChange }: EditVendorSheetP
                   value={formData.notes || ''} 
                   onChange={handleChange} 
                   rows={4}
-                  className="rounded-xl resize-none"
+                  className="rounded-xl resize-none bg-white dark:bg-gray-900"
+                  placeholder="Any additional information..."
                 />
               </div>
             </div>
           </div>
 
-          <SheetFooter className="p-6 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900 sticky bottom-0 z-10 backdrop-blur-xl">
-            <Button 
-              type="button" 
-              variant="ghost" 
-              onClick={() => onOpenChange(false)}
-              disabled={isPending}
-              className="rounded-xl font-semibold"
+          <div className="pt-6 border-t border-gray-100 dark:border-gray-800 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={isPending || isDeleting}
+              className="rounded-xl font-semibold w-full sm:w-auto"
             >
-              Cancel
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete Vendor
             </Button>
-            <Button 
-              type="submit" 
-              disabled={isPending}
-              className="rounded-xl font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-all hover:scale-105"
-            >
-              {isPending ? 'Saving...' : 'Save Changes'}
-            </Button>
-          </SheetFooter>
+            
+            <div className="flex gap-3 w-full sm:w-auto">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => onOpenChange(false)}
+                disabled={isPending || isDeleting}
+                className="rounded-xl font-semibold flex-1 sm:flex-none"
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={isPending || isDeleting}
+                className="rounded-xl font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] flex-1 sm:flex-none"
+              >
+                {isPending ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </div>
+          </div>
         </form>
       </SheetContent>
     </Sheet>

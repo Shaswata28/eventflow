@@ -128,7 +128,7 @@ export function VendorDetail({ id }: { id: string }) {
             <div className="space-y-5">
               <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-800">
                 <p className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                  <DollarSign className="w-4 h-4" /> Last Known Price
+                  <span className="font-bold text-base leading-none">৳</span> Last Known Price
                 </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {vendor.last_used_price ? `${vendor.last_used_price.toLocaleString()} BDT` : 'N/A'}

@@ -18,6 +18,7 @@ import { usePendingApprovals } from '@/lib/hooks/useApprovals'
 import { useProfile } from '@/lib/hooks/useProfile'
 import { Badge } from '@/components/ui/badge'
 import { createBrowserClient } from '@supabase/ssr'
+import { useQueryClient } from '@tanstack/react-query'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -35,6 +36,7 @@ export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const { sidebarOpen, setSidebarOpen } = useUIStore()
+  const queryClient = useQueryClient()
   
   // Fetch pending approvals for badge (polls silently due to hook setup)
   const { data: pendingApprovals } = usePendingApprovals()
@@ -48,6 +50,7 @@ export function Sidebar() {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     )
     await supabase.auth.signOut()
+    queryClient.clear()
     router.push('/login')
   }
 
