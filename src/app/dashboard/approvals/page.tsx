@@ -28,8 +28,8 @@ export default async function ApprovalsPage() {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="text-center space-y-3">
-          <h2 className="text-2xl font-bold text-gray-900">Access Denied</h2>
-          <p className="text-gray-500 max-w-md">
+          <h2 className="text-2xl font-bold text-foreground">Access Denied</h2>
+          <p className="text-muted-foreground max-w-md">
             You do not have permission to view the Approvals dashboard. 
             Only the Finance Manager and Managing Director can approve vendor assignments.
           </p>

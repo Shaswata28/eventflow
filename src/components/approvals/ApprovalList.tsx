@@ -140,10 +140,10 @@ export function ApprovalList() {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <Tabs defaultValue="pending" className="w-full">
-        <TabsList className="mb-8 bg-gray-100/50 dark:bg-gray-800/50 p-1 rounded-2xl border border-gray-200/50 dark:border-gray-700 inline-flex">
+        <TabsList className="mb-8 bg-gray-100 dark:bg-gray-800 p-1 rounded-2xl border border-gray-200 dark:border-gray-700 inline-flex">
           <TabsTrigger 
             value="pending" 
-            className="rounded-xl px-6 py-2.5 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 data-[state=active]:dark:text-indigo-400 font-semibold transition-all"
+            className="rounded-xl px-6 py-2.5 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 text-gray-600 dark:text-gray-400 font-semibold transition-all"
           >
             Pending Approvals
             {pendingApprovals && pendingApprovals.length > 0 && (
@@ -154,7 +154,7 @@ export function ApprovalList() {
           </TabsTrigger>
           <TabsTrigger 
             value="resolved" 
-            className="rounded-xl px-6 py-2.5 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 data-[state=active]:shadow-sm data-[state=active]:text-gray-900 data-[state=active]:dark:text-white font-semibold transition-all"
+            className="rounded-xl px-6 py-2.5 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:shadow-sm data-[state=active]:text-gray-900 dark:data-[state=active]:text-white text-gray-600 dark:text-gray-400 font-semibold transition-all"
           >
             Resolved
           </TabsTrigger>

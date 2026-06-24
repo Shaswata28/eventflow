@@ -49,9 +49,9 @@ export function EventCalendar() {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-border h-[calc(100vh-12rem)] min-h-[600px] overflow-hidden fc-theme-standard relative flex flex-col">
+    <div className="bg-card rounded-xl shadow-sm border border-border h-[calc(100vh-12rem)] min-h-[600px] overflow-hidden fc-theme-standard relative flex flex-col">
       <style dangerouslySetInnerHTML={{__html: `
-        /* Override FullCalendar variables for Obsidian Style */
+        /* Light Mode FullCalendar overrides */
         .fc {
           --fc-border-color: #EAEAEA;
           --fc-daygrid-event-dot-width: 8px;
@@ -60,6 +60,16 @@ export function EventCalendar() {
           --fc-event-border-color: transparent;
           --fc-event-text-color: #1c1b1b;
           --fc-page-bg-color: #FAFAFA;
+        }
+        
+        /* Dark Mode FullCalendar overrides */
+        :is(.dark .fc) {
+          --fc-border-color: #334155;
+          --fc-today-bg-color: rgba(99,102,241,0.05);
+          --fc-event-text-color: #f8fafc;
+          --fc-page-bg-color: #1e293b;
+          --fc-neutral-bg-color: #1e293b;
+          --fc-list-event-hover-bg-color: #334155;
         }
         
         .fc-theme-standard .fc-scrollgrid { border: none; }
@@ -73,6 +83,9 @@ export function EventCalendar() {
         }
         .fc .fc-daygrid-day:hover {
           background-color: #FFFFFF;
+        }
+        :is(.dark .fc .fc-daygrid-day:hover) {
+          background-color: #334155;
         }
         
         /* Event Card Styling */
@@ -95,6 +108,7 @@ export function EventCalendar() {
         }
         .fc-event-main { color: inherit; overflow: visible; }
         .fc-event-title { font-weight: 600; font-size: 13px; line-height: 1.2; color: var(--event-color); filter: brightness(0.6); }
+        :is(.dark .fc-event-title) { filter: brightness(1.3); }
         .fc-event-time { font-size: 11px; font-weight: 700; color: var(--event-color); margin-bottom: 2px; }
 
         /* Typography */
@@ -105,19 +119,21 @@ export function EventCalendar() {
           color: #8C8C8C; 
           font-weight: 500;
         }
+        :is(.dark .fc-col-header-cell-cushion) { color: #64748b; }
         .fc-daygrid-day-number {
           font-family: 'JetBrains Mono', monospace;
           font-size: 14px;
           color: #1c1b1b;
           padding: 12px;
         }
+        :is(.dark .fc-daygrid-day-number) { color: #cbd5e1; }
         
         /* Today Highlight */
         .fc .fc-daygrid-day.fc-day-today {
-          background-color: color-mix(in srgb, var(--primary) 3%, transparent) !important;
+          background-color: color-mix(in srgb, #6366f1 3%, transparent) !important;
         }
         .fc .fc-day-today .fc-daygrid-day-number {
-          background-color: var(--primary);
+          background-color: #6366f1;
           color: white;
           border-radius: 50%;
           width: 28px;
@@ -139,6 +155,7 @@ export function EventCalendar() {
           font-size: 20px !important;
           color: #1c1b1b;
         }
+        :is(.dark .fc-toolbar-title) { color: #f8fafc; }
         
         /* Segmented Control for Month/Week */
         .fc-toolbar-chunk:last-child .fc-button-group {
@@ -148,6 +165,7 @@ export function EventCalendar() {
           display: flex;
           gap: 2px;
         }
+        :is(.dark .fc-toolbar-chunk:last-child .fc-button-group) { background: #334155; }
         .fc .fc-button-primary { 
           background-color: transparent !important; 
           border: none !important; 
@@ -161,10 +179,15 @@ export function EventCalendar() {
         .fc .fc-button-primary:hover { 
           color: #0f172a !important;
         }
+        :is(.dark .fc .fc-button-primary:hover) { color: #f8fafc !important; }
         .fc .fc-button-primary.fc-button-active {
           background-color: #ffffff !important;
           color: #0f172a !important;
           box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+        }
+        :is(.dark .fc .fc-button-primary.fc-button-active) {
+          background-color: #1e293b !important;
+          color: #f8fafc !important;
         }
         
         /* Prev / Next buttons */
@@ -180,8 +203,15 @@ export function EventCalendar() {
           border: 1px solid #EAEAEA !important;
           color: #64748b !important;
         }
+        :is(.dark .fc .fc-prev-button), :is(.dark .fc .fc-next-button) {
+          border-color: #334155 !important;
+          color: #94a3b8 !important;
+        }
         .fc .fc-prev-button:hover, .fc .fc-next-button:hover {
           background-color: #f1f5f9 !important;
+        }
+        :is(.dark .fc .fc-prev-button:hover), :is(.dark .fc .fc-next-button:hover) {
+          background-color: #334155 !important;
         }
         
         /* Today button */
@@ -191,11 +221,21 @@ export function EventCalendar() {
           border-radius: 8px !important;
           padding: 6px 16px !important;
           margin-left: 12px !important;
+          color: #64748b !important;
+        }
+        :is(.dark .fc .fc-today-button) {
+          border-color: #334155 !important;
+          background-color: #1e293b !important;
+          color: #94a3b8 !important;
         }
         .fc .fc-today-button:hover {
           background-color: #f8fafc !important;
         }
+        :is(.dark .fc .fc-today-button:hover) {
+          background-color: #334155 !important;
+        }
       `}} />
+
       <div className="flex-1 overflow-hidden p-6 pt-0">
         <FullCalendar
           ref={calendarRef}

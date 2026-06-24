@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
+import { useTheme } from 'next-themes'
 import { useProfile, useUpdateProfile } from '@/lib/hooks/useProfile'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
@@ -15,14 +16,17 @@ export default function SettingsPage() {
   const { mutateAsync: updateProfile, isPending } = useUpdateProfile()
   
   const [name, setName] = useState('')
-  const [isDarkMode, setIsDarkMode] = useState(false)
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     if (profile?.name) {
       setName(profile.name)
     }
-    // Check if document has dark class
-    setIsDarkMode(document.documentElement.classList.contains('dark'))
   }, [profile])
 
   const handleSaveProfile = async (e: React.FormEvent) => {
@@ -36,14 +40,7 @@ export default function SettingsPage() {
   }
 
   const toggleTheme = (checked: boolean) => {
-    setIsDarkMode(checked)
-    if (checked) {
-      document.documentElement.classList.add('dark')
-      localStorage.setItem('theme', 'dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-      localStorage.setItem('theme', 'light')
-    }
+    setTheme(checked ? 'dark' : 'light')
   }
 
   if (isLoading) {
@@ -54,33 +51,33 @@ export default function SettingsPage() {
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 dark:border-gray-800 pb-5 animate-in fade-in slide-in-from-top-4 duration-500">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white flex items-center gap-2">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <Settings className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
             Settings
           </h2>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-sm text-muted-foreground">
             Manage your account settings and preferences.
           </p>
         </div>
       </div>
 
       <Tabs defaultValue="profile" className="w-full animate-in fade-in duration-700">
-        <TabsList className="mb-8 bg-gray-100/50 dark:bg-gray-800/50 p-1 rounded-2xl border border-gray-200/50 dark:border-gray-700 inline-flex flex-wrap gap-1">
+        <TabsList className="mb-8 bg-gray-100 dark:bg-gray-800 p-1 rounded-2xl border border-gray-200 dark:border-gray-700 inline-flex flex-wrap gap-1">
           <TabsTrigger 
             value="profile" 
-            className="rounded-xl px-6 py-2.5 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 data-[state=active]:dark:text-indigo-400 font-semibold transition-all flex items-center"
+            className="rounded-xl px-6 py-2.5 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 text-gray-600 dark:text-gray-400 font-semibold transition-all flex items-center"
           >
             <User className="w-4 h-4 mr-2" /> Profile
           </TabsTrigger>
           <TabsTrigger 
             value="appearance" 
-            className="rounded-xl px-6 py-2.5 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 data-[state=active]:dark:text-indigo-400 font-semibold transition-all flex items-center"
+            className="rounded-xl px-6 py-2.5 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 text-gray-600 dark:text-gray-400 font-semibold transition-all flex items-center"
           >
             <Palette className="w-4 h-4 mr-2" /> Appearance
           </TabsTrigger>
           <TabsTrigger 
             value="security" 
-            className="rounded-xl px-6 py-2.5 data-[state=active]:bg-white data-[state=active]:dark:bg-gray-900 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 data-[state=active]:dark:text-indigo-400 font-semibold transition-all flex items-center"
+            className="rounded-xl px-6 py-2.5 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900 data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 dark:data-[state=active]:text-indigo-400 text-gray-600 dark:text-gray-400 font-semibold transition-all flex items-center"
           >
             <Shield className="w-4 h-4 mr-2" /> Security
           </TabsTrigger>
@@ -153,7 +150,7 @@ export default function SettingsPage() {
                   <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Switch between light and dark themes.</p>
                 </div>
                 <Switch 
-                  checked={isDarkMode}
+                  checked={mounted ? theme === 'dark' : false}
                   onCheckedChange={toggleTheme}
                   className="data-[state=checked]:bg-indigo-600"
                 />
