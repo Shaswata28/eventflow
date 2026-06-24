@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
 export const metadata: Metadata = {
-  title: 'Vendor Details | EventFlow',
+  title: 'Vendor Details | MoonVeil Workspace',
   description: 'View vendor details and assignment history',
 }
 

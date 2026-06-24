@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Plus } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Vendors | EventFlow',
+  title: 'Vendors | MoonVeil Workspace',
   description: 'Manage vendor database and assignments',
 }
 

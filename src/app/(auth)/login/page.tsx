@@ -19,7 +19,10 @@ export default async function LoginPage(props: {
       <header className="flex items-center justify-between px-6 py-4 md:py-6 max-w-7xl mx-auto w-full z-10">
         <div className="flex items-center gap-2">
           <Database className="text-indigo-600 dark:text-indigo-400 w-6 h-6 md:w-7 md:h-7" />
-          <span className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white tracking-tight">EventFlow</span>
+          <div className="flex items-center gap-2 mt-0.5">
+            <span className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white tracking-tight">MoonVeil</span>
+            <span className="px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 text-[10px] font-semibold uppercase tracking-wider border border-indigo-200 dark:border-indigo-500/30">Workspace</span>
+          </div>
         </div>
         <div className="hidden md:block">
           <span className="font-mono text-[11px] text-muted-foreground uppercase tracking-wider">Version 1.0.0-Pro</span>
@@ -71,7 +74,7 @@ export default async function LoginPage(props: {
             <a className="text-[12px] font-medium text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" href="#">Terms of Service</a>
             <a className="text-[12px] font-medium text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" href="#">Cookie Settings</a>
           </div>
-          <p className="font-mono text-[11px] md:text-[13px] text-muted-foreground">© 2026 EventFlow Technologies Inc.</p>
+          <p className="font-mono text-[11px] md:text-[13px] text-muted-foreground">© 2026 MoonVeil Technologies Inc.</p>
         </div>
       </footer>
 

@@ -3,7 +3,7 @@ import { ApprovalList } from '@/components/approvals/ApprovalList'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata = {
-  title: 'Approvals - EventFlow',
+  title: 'Approvals - MoonVeil Workspace',
 }
 
 export default async function ApprovalsPage() {

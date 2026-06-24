@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Add New Vendor | EventFlow',
+  title: 'Add New Vendor | MoonVeil Workspace',
   description: 'Add a new vendor to the database',
 }
 

@@ -20,8 +20,9 @@ export function useActivityLog() {
           *,
           actor:user_profiles!activity_log_actor_id_fkey(name, avatar_url)
         `)
+        .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
         .order('created_at', { ascending: false })
-        .limit(20)
+        .limit(50)
 
       if (error) throw error
       return data as any as EnrichedActivityLog[]

@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { Database } from '@/types/database.types'
+import { logActivity } from '@/lib/utils/logActivity'
 
 type VendorRow = Database['public']['Tables']['vendors']['Row']
 type VendorInsert = Database['public']['Tables']['vendors']['Insert']
@@ -58,7 +59,21 @@ export function useCreateVendor() {
         .single()
 
       if (error) throw error
-      return data as VendorRow
+      
+      const createdVendor = data as VendorRow
+      
+      await logActivity(supabase as any, {
+        entityType: 'vendor',
+        entityId: createdVendor.id,
+        action: 'create',
+        description: `added ${createdVendor.name} as a new ${createdVendor.category} vendor`,
+        metadata: {
+          vendor_name: createdVendor.name,
+          category: createdVendor.category
+        }
+      })
+
+      return createdVendor
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vendors'] })

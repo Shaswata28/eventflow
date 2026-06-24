@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { Database } from '@/types/database.types'
+import { logActivity } from '@/lib/utils/logActivity'
 
 type ServiceCategoryRow = Database['public']['Tables']['service_categories']['Row']
 type ServiceCategoryInsert = Database['public']['Tables']['service_categories']['Insert']
@@ -111,6 +112,44 @@ export function useCreateVendorAssignment() {
           
         if (approvalError) throw approvalError
       }
+      
+      // Fetch details for logging
+      const { data: details } = await supabase
+        .from('service_categories')
+        .select(`
+          category,
+          event_programs (
+            program_name,
+            custom_name,
+            clients (full_name)
+          )
+        `)
+        .eq('id', assignmentData.service_category_id)
+        .single()
+        
+      let vendorName = assignmentData.vendor_name_override || 'Vendor'
+      if (assignmentData.vendor_id) {
+        const { data: v } = await supabase.from('vendors').select('name').eq('id', assignmentData.vendor_id).single()
+        if (v) vendorName = v.name
+      }
+      
+      const pName = (details as any)?.event_programs?.custom_name || (details as any)?.event_programs?.program_name || 'Program'
+      const cName = (details as any)?.event_programs?.clients?.full_name || 'Client'
+      const cat = (details as any)?.category || 'Category'
+
+      await logActivity(supabase as any, {
+        entityType: 'vendor_assignment',
+        entityId: assignmentData.id,
+        action: 'assign',
+        description: `assigned ${vendorName} to ${cat} for ${pName}`,
+        metadata: {
+          vendor_name: vendorName,
+          category: cat,
+          program_name: pName,
+          client_name: cName,
+          quoted_price: assignmentData.quoted_price
+        }
+      })
 
       return assignmentData as VendorAssignmentRow
     },

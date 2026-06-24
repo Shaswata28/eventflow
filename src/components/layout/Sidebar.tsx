@@ -106,7 +106,8 @@ export function Sidebar() {
       `}>
         <div className="flex h-16 items-center justify-between px-6 pt-6 mb-10">
           <Link href="/dashboard" className="flex items-center space-x-2">
-            <span className="text-xl font-bold text-white tracking-tight">EventFlow</span>
+            <span className="text-xl font-bold text-white tracking-tight">MoonVeil</span>
+            <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-semibold uppercase tracking-wider border border-indigo-500/30">Workspace</span>
           </Link>
           <button 
             className="md:hidden text-sidebar-foreground hover:text-white"

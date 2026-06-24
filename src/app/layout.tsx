@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 import { QueryProvider } from "@/components/providers/QueryProvider";
 
 export const metadata: Metadata = {
-  title: "EventFlow",
+  title: "MoonVeil Workspace",
   description: "Event Management CRM",
 };
 

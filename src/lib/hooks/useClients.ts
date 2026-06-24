@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { Database } from '@/types/database.types'
+import { logActivity } from '@/lib/utils/logActivity'
 
 type ClientInsert = Database['public']['Tables']['clients']['Insert']
 type ClientUpdate = Database['public']['Tables']['clients']['Update']
@@ -57,7 +58,23 @@ export function useCreateClient() {
         .single()
 
       if (error) throw error
-      return data as Database['public']['Tables']['clients']['Row']
+      
+      const createdClient = data as Database['public']['Tables']['clients']['Row']
+      
+      // Log activity
+      await logActivity(supabase, {
+        entityType: 'client',
+        entityId: createdClient.id,
+        action: 'create',
+        description: `created a new event for ${createdClient.full_name}`,
+        metadata: { 
+          client_name: createdClient.full_name,
+          event_type: createdClient.event_type,
+          client_code: createdClient.client_code
+        }
+      })
+
+      return createdClient
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clients'] })

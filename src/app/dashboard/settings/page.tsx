@@ -143,7 +143,7 @@ export default function SettingsPage() {
           <div className="bg-white dark:bg-gray-900 border border-gray-200/50 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm">
             <div className="mb-6">
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">Appearance</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Customize how EventFlow looks on your device.</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Customize how MoonVeil Workspace looks on your device.</p>
             </div>
             
             <div className="max-w-xl">

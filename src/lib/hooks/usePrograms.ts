@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { Database } from '@/types/database.types'
+import { logActivity } from '@/lib/utils/logActivity'
 
 type ProgramInsert = Database['public']['Tables']['event_programs']['Insert']
 type ProgramUpdate = Database['public']['Tables']['event_programs']['Update']
@@ -71,7 +72,7 @@ export function useCreateProgram() {
 
       const { data: client, error: clientFetchError } = await (supabase as any)
         .from('clients')
-        .select('status')
+        .select('status, full_name')
         .eq('id', newProgram.client_id)
         .single()
 
@@ -83,6 +84,20 @@ export function useCreateProgram() {
             .eq('id', newProgram.client_id)
         }
       }
+      
+      const clientName = client?.full_name || 'Client'
+      
+      await logActivity(supabase as any, {
+        entityType: 'event_program',
+        entityId: program.id,
+        action: 'create',
+        description: `created ${program.custom_name || program.program_name} program for ${clientName}`,
+        metadata: {
+          program_name: program.custom_name || program.program_name,
+          client_name: clientName,
+          event_date: program.event_date
+        }
+      })
 
       return program
     },

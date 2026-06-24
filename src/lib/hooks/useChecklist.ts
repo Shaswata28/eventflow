@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { Database } from '@/types/database.types'
+import { logActivity } from '@/lib/utils/logActivity'
 
 type ChecklistItem = Database['public']['Tables']['event_checklists']['Row']
 type ChecklistInsert = Database['public']['Tables']['event_checklists']['Insert']
@@ -52,6 +53,25 @@ export function useCreateTask() {
         .single()
 
       if (error) throw error
+      
+      let assignedUserName = 'team'
+      if (task.assigned_to) {
+        const { data: userProfile } = await supabase.from('user_profiles').select('name').eq('id', task.assigned_to).single()
+        if (userProfile) assignedUserName = userProfile.name
+      }
+      
+      await logActivity(supabase as any, {
+        entityType: 'event_checklist',
+        entityId: data.id,
+        action: 'assign',
+        description: `assigned task '${data.task_title}' to ${assignedUserName}`,
+        metadata: {
+          task_title: data.task_title,
+          assigned_to_name: assignedUserName,
+          program_id: data.program_id
+        }
+      })
+
       return data
     },
     onSuccess: (_, variables) => {
@@ -86,6 +106,20 @@ export function useUpdateTask() {
         .single()
 
       if (error) throw error
+      
+      if (updates.is_done === true) {
+        await logActivity(supabase as any, {
+          entityType: 'event_checklist',
+          entityId: data.id,
+          action: 'complete',
+          description: `marked '${data.task_title}' as done`,
+          metadata: {
+            task_title: data.task_title,
+            program_id: data.program_id
+          }
+        })
+      }
+
       return data
     },
     // Optimistic update
