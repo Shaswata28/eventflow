@@ -43,7 +43,7 @@ export function useCreateTask() {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) throw new Error('Not authenticated')
 
-      const { data, error } = await supabase
+      const { data: insertData, error } = await supabase
         .from('event_checklists')
         .insert({
           ...task,
@@ -53,11 +53,12 @@ export function useCreateTask() {
         .single()
 
       if (error) throw error
+      const data = insertData as any
       
       let assignedUserName = 'team'
       if (task.assigned_to) {
         const { data: userProfile } = await supabase.from('user_profiles').select('name').eq('id', task.assigned_to).single()
-        if (userProfile) assignedUserName = userProfile.name
+        if (userProfile) assignedUserName = (userProfile as any).name
       }
       
       await logActivity(supabase as any, {

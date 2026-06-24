@@ -130,7 +130,7 @@ export function useCreateVendorAssignment() {
       let vendorName = assignmentData.vendor_name_override || 'Vendor'
       if (assignmentData.vendor_id) {
         const { data: v } = await supabase.from('vendors').select('name').eq('id', assignmentData.vendor_id).single()
-        if (v) vendorName = v.name
+        if (v) vendorName = (v as any).name
       }
       
       const pName = (details as any)?.event_programs?.custom_name || (details as any)?.event_programs?.program_name || 'Program'

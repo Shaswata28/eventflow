@@ -37,10 +37,10 @@ export async function logActivity(
       entity_id: payload.entityId,
       action: payload.action,
       description: payload.description,
-      metadata: payload.metadata || null,
+      metadata: (payload.metadata as any) || null,
     }
 
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('activity_log')
       .insert(logEntry)
 
